@@ -1,45 +1,14 @@
+import ActionLink from "./components/ActionLink.jsx";
+import ProjectCard from "./components/ProjectCard.jsx";
+import SectionHeading from "./components/SectionHeading.jsx";
+import {
+  navigationLinks,
+  projects,
+  skills,
+  socialLinks,
+} from "./data/portfolio.js";
+
 export default function App() {
-  const projects = [
-    {
-      title: "AutoSpot Smart Parking",
-      tags: ["Flutter", "API", "Product"],
-      desc: "Built wallet, payment, and parking session flows for a smart parking system with a focus on smooth user experience and app usability.",
-      github: "https://github.com/watarukeema/Capstone-Project--Autospot---Smart-vehicle-Parking-Management-System",
-      featured: true,
-    },
-    {
-      title: "Ignite Networking Platform",
-      tags: ["TypeScript", "Express", "Supabase", "PostgreSQL"],
-      desc: "Designed backend APIs, authentication flows, and database structures for a student networking platform focused on scalable user and profile workflows.",
-      github: "https://github.com/watarukeema/ignite",
-      featured: true,
-    },
-    {
-      title: "Portfolio",
-      tags: ["React", "Vite", "TailwindCSS", "Vercel"],
-      desc: "Designed and built a personal developer portfolio to showcase projects, skills, and technical work. Built with React and TailwindCSS with a focus on clean UI, responsive design, and fast deployment using Vercel.",
-      github: "https://github.com/watarukeema/portfolio",
-    },
-    {
-      title: "Music Genre Classification",
-      tags: ["Python", "Machine Learning", "Audio Features"],
-      desc: "Trained and evaluated classification models on the GTZAN dataset using extracted audio features for music genre prediction.",
-      github: "https://github.com/watarukeema/EtherealEcho",
-    },
-    {
-      title: "HTTP/1.1 Proxy Server",
-      tags: ["Python", "Sockets", "HTTP", "Caching"],
-      desc: "Built a multi-threaded HTTP/1.1 proxy server supporting GET, POST, HEAD, and CONNECT with persistent connections, structured logging, and caching.",
-      github: "https://github.com/watarukeema/py-mini-http-proxy",
-    },
-  ];
-
-  const skills = {
-    Languages: ["Python", "TypeScript", "Java", "SQL", "Rust"],
-    Frameworks: ["React", "Flutter", "Express.js", "Supabase"],
-    Tools: ["Git", "Docker", "PostgreSQL", "Linux", "Vercel"],
-  };
-
   return (
     <div className="min-h-screen bg-black text-white antialiased">
       <div className="fixed inset-0 -z-10">
@@ -55,18 +24,15 @@ export default function App() {
             </a>
 
             <div className="hidden items-center gap-6 text-sm text-zinc-400 md:flex">
-              <a href="#projects" className="transition hover:text-white">
-                Projects
-              </a>
-              <a href="#skills" className="transition hover:text-white">
-                Skills
-              </a>
-              <a href="#about" className="transition hover:text-white">
-                About
-              </a>
-              <a href="#contact" className="transition hover:text-white">
-                Contact
-              </a>
+              {navigationLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="transition hover:text-white"
+                >
+                  {link.label}
+                </a>
+              ))}
             </div>
           </nav>
         </header>
@@ -95,45 +61,24 @@ export default function App() {
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">
-                <a
-                  href="#projects"
-                  className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-zinc-200"
-                >
+                <ActionLink href="#projects" variant="primary">
                   View Projects
-                </a>
-                <a
-                  href="https://github.com/watarukeema"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
-                >
-                  GitHub
-                </a>
-                <a
-                  href="https://www.linkedin.com/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
-                >
-                  LinkedIn
-                </a>
+                </ActionLink>
+                {socialLinks.map((link) => (
+                  <ActionLink key={link.href} href={link.href} external>
+                    {link.label}
+                  </ActionLink>
+                ))}
               </div>
             </div>
           </section>
 
           <section id="projects" className="scroll-mt-24 py-20">
-            <div className="max-w-2xl">
-              <p className="text-sm font-medium uppercase tracking-[0.2em] text-zinc-400">
-                Projects
-              </p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-                Selected work
-              </h2>
-              <p className="mt-4 text-zinc-400">
-                A few projects that reflect my interests across backend
-                engineering, systems, and product-focused development.
-              </p>
-            </div>
+            <SectionHeading
+              eyebrow="Projects"
+              title="Selected work"
+              description="A few projects that reflect my interests across backend engineering, systems, and product-focused development."
+            />
 
             <div className="mt-10 grid gap-5 md:grid-cols-2">
               {projects.map((project) => (
@@ -143,14 +88,7 @@ export default function App() {
           </section>
 
           <section id="skills" className="scroll-mt-24 py-20">
-            <div className="max-w-2xl">
-              <p className="text-sm font-medium uppercase tracking-[0.2em] text-zinc-400">
-                Skills
-              </p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-                Tools I work with
-              </h2>
-            </div>
+            <SectionHeading eyebrow="Skills" title="Tools I work with" />
 
             <div className="mt-10 grid gap-5 md:grid-cols-3">
               {Object.entries(skills).map(([category, items]) => (
@@ -176,14 +114,7 @@ export default function App() {
 
           <section id="about" className="scroll-mt-24 py-20">
             <div className="grid gap-10 md:grid-cols-[1fr_1.2fr] md:items-start">
-              <div>
-                <p className="text-sm font-medium uppercase tracking-[0.2em] text-zinc-400">
-                  About
-                </p>
-                <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-                  A little about me
-                </h2>
-              </div>
+              <SectionHeading eyebrow="About" title="A little about me" />
 
               <div className="space-y-5 text-zinc-300 leading-8">
                 <p>
@@ -208,41 +139,24 @@ export default function App() {
 
           <section id="contact" className="scroll-mt-24 py-20">
             <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-8 sm:p-10">
-              <p className="text-sm font-medium uppercase tracking-[0.2em] text-zinc-400">
-                Contact
-              </p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-                Let’s connect
-              </h2>
-              <p className="mt-4 max-w-2xl text-zinc-400">
-                I’m currently open to graduate software engineering
-                opportunities, collaborations, and conversations about building
-                thoughtful products and systems.
-              </p>
+              <SectionHeading
+                eyebrow="Contact"
+                title="Let’s connect"
+                description="I’m currently open to graduate software engineering opportunities, collaborations, and conversations about building thoughtful products and systems."
+              />
 
               <div className="mt-8 flex flex-wrap gap-3">
-                <a
+                <ActionLink
                   href="mailto:jansen.jans.wk@gmail.com"
-                  className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-zinc-200"
+                  variant="primary"
                 >
                   Email Me
-                </a>
-                <a
-                  href="https://github.com/watarukeema"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
-                >
-                  GitHub
-                </a>
-                <a
-                  href="https://www.linkedin.com/in/jansen-536150366/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
-                >
-                  LinkedIn
-                </a>
+                </ActionLink>
+                {socialLinks.map((link) => (
+                  <ActionLink key={link.href} href={link.href} external>
+                    {link.label}
+                  </ActionLink>
+                ))}
               </div>
             </div>
           </section>
@@ -253,51 +167,6 @@ export default function App() {
           and deployed on Vercel.
         </footer>
       </div>
-    </div>
-  );
-}
-
-function ProjectCard({ project }) {
-  return (
-    <div
-      className={`group rounded-3xl border p-6 transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.05] ${
-        project.featured
-          ? "border-white/15 bg-white/[0.04]"
-          : "border-white/10 bg-white/[0.02]"
-      }`}
-    >
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          {project.featured && (
-            <span className="mb-3 inline-flex rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-zinc-300">
-              Featured
-            </span>
-          )}
-          <h3 className="text-xl font-semibold text-white">{project.title}</h3>
-        </div>
-
-        <a
-          href={project.github}
-          target="_blank"
-          rel="noreferrer"
-          className="shrink-0 text-sm text-zinc-400 transition group-hover:text-white"
-        >
-          GitHub →
-        </a>
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-2">
-        {project.tags.map((tag) => (
-          <span
-            key={tag}
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-300"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
-
-      <p className="mt-5 leading-7 text-zinc-300">{project.desc}</p>
     </div>
   );
 }
