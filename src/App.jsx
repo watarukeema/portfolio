@@ -1,3 +1,4 @@
+import { useState } from "react";
 import ActionLink from "./components/ActionLink.jsx";
 import ProjectCard from "./components/ProjectCard.jsx";
 import SectionHeading from "./components/SectionHeading.jsx";
@@ -9,6 +10,12 @@ import {
 } from "./data/portfolio.js";
 
 export default function App() {
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+
+  const handleMobileNavClick = () => {
+    setIsMobileNavOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-black text-white antialiased">
       <div className="fixed inset-0 -z-10">
@@ -18,7 +25,7 @@ export default function App() {
 
       <div className="mx-auto max-w-6xl px-6">
         <header className="sticky top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur">
-          <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between">
+          <nav className="mx-auto flex min-h-16 max-w-6xl items-center justify-between py-3">
             <a href="#home" className="text-sm font-semibold tracking-wide text-white">
               Jansen
             </a>
@@ -34,7 +41,38 @@ export default function App() {
                 </a>
               ))}
             </div>
+
+            <button
+              type="button"
+              className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-200 transition hover:border-white/20 hover:bg-white/10 md:hidden"
+              aria-expanded={isMobileNavOpen}
+              aria-controls="mobile-navigation"
+              aria-label="Toggle navigation menu"
+              onClick={() => setIsMobileNavOpen((open) => !open)}
+            >
+              Menu
+            </button>
           </nav>
+
+          {isMobileNavOpen ? (
+            <div
+              id="mobile-navigation"
+              className="border-t border-white/10 pb-4 md:hidden"
+            >
+              <div className="flex flex-col gap-2 pt-4 text-sm text-zinc-300">
+                {navigationLinks.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 transition hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
+                    onClick={handleMobileNavClick}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </header>
 
         <main>
@@ -42,33 +80,72 @@ export default function App() {
             id="home"
             className="flex min-h-[calc(100vh-4rem)] items-center py-20"
           >
-            <div className="max-w-3xl">
-              <div className="mb-6 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-zinc-300">
-                Open to Graduate Software Engineer Opportunities
+            <div className="grid gap-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(18rem,24rem)] lg:items-end">
+              <div className="max-w-3xl">
+                <div className="mb-6 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-zinc-300">
+                  Open to Graduate Software Engineer Opportunities
+                </div>
+
+                <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-zinc-400">
+                  Software Engineer
+                </p>
+
+                <h1 className="text-5xl font-semibold tracking-tight text-white sm:text-6xl md:text-7xl">
+                  Jansen
+                </h1>
+
+                <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-300 sm:text-xl">
+                  I build backend-heavy products with a strong bias for clear
+                  APIs, reliable systems, and interfaces that do not get in the
+                  user's way.
+                </p>
+
+                <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400 sm:text-lg">
+                  My work spans networking, student platforms, mobile product
+                  flows, and machine learning projects. I like messy technical
+                  problems that need both engineering discipline and product
+                  judgment.
+                </p>
+
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <ActionLink href="#projects" variant="primary">
+                    View Projects
+                  </ActionLink>
+                  {socialLinks.map((link) => (
+                    <ActionLink key={link.href} href={link.href} external>
+                      {link.label}
+                    </ActionLink>
+                  ))}
+                </div>
               </div>
 
-              <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-zinc-400">
-                Software Engineer
-              </p>
-
-              <h1 className="text-5xl font-semibold tracking-tight text-white sm:text-6xl md:text-7xl">
-                Jansen
-              </h1>
-
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-300 sm:text-xl">
-                Backend-focused software engineer building scalable systems and
-                clean user-facing products.
-              </p>
-
-              <div className="mt-8 flex flex-wrap gap-3">
-                <ActionLink href="#projects" variant="primary">
-                  View Projects
-                </ActionLink>
-                {socialLinks.map((link) => (
-                  <ActionLink key={link.href} href={link.href} external>
-                    {link.label}
-                  </ActionLink>
-                ))}
+              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                <p className="text-xs font-medium uppercase tracking-[0.24em] text-zinc-500">
+                  What I care about
+                </p>
+                <div className="mt-5 space-y-4">
+                  <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                    <p className="text-sm text-zinc-500">Systems</p>
+                    <p className="mt-2 text-base leading-7 text-zinc-200">
+                      Building dependable backend flows, data models, and
+                      service logic that scale without turning brittle.
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                    <p className="text-sm text-zinc-500">Product</p>
+                    <p className="mt-2 text-base leading-7 text-zinc-200">
+                      Keeping user experience in view so technical decisions
+                      improve the product instead of fighting it.
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                    <p className="text-sm text-zinc-500">Growth</p>
+                    <p className="mt-2 text-base leading-7 text-zinc-200">
+                      Looking for a graduate role with strong engineering
+                      mentorship, meaningful ownership, and real product work.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -116,23 +193,48 @@ export default function App() {
             <div className="grid gap-10 md:grid-cols-[1fr_1.2fr] md:items-start">
               <SectionHeading eyebrow="About" title="A little about me" />
 
-              <div className="space-y-5 text-zinc-300 leading-8">
-                <p>
-                  I’m Jansen, a software engineer with a strong interest in
-                  backend systems, scalable application design, and building
-                  products that are both technically sound and pleasant to use.
-                </p>
-                <p>
-                  My work spans projects in networking, machine learning,
-                  full-stack development, and mobile application workflows. I
-                  enjoy turning technical ideas into practical, well-structured
-                  solutions.
-                </p>
-                <p>
-                  Right now, I’m especially interested in graduate software
-                  engineering opportunities where I can grow as an engineer and
-                  contribute to meaningful products.
-                </p>
+              <div className="space-y-6">
+                <div className="space-y-5 text-zinc-300 leading-8">
+                  <p>
+                    I’m Jansen, a software engineer drawn to backend systems,
+                    application architecture, and the practical decisions that
+                    make software hold up outside the classroom.
+                  </p>
+                  <p>
+                    I have worked across API design, authentication flows,
+                    database-backed products, mobile feature development, and
+                    networking projects. That range has made me comfortable
+                    moving between low-level technical detail and the broader
+                    product shape of a project.
+                  </p>
+                  <p>
+                    The kind of work I enjoy most is turning an unclear problem
+                    into something structured: defining the data model, shaping
+                    the service boundaries, and making sure the final experience
+                    feels simple for the person using it.
+                  </p>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                    <p className="text-sm text-zinc-500">Interested in</p>
+                    <p className="mt-2 text-base font-medium text-white">
+                      Backend & Frontend engineering
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                    <p className="text-sm text-zinc-500">Comfortable with</p>
+                    <p className="mt-2 text-base font-medium text-white">
+                      Backend delivery
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                    <p className="text-sm text-zinc-500">Looking for</p>
+                    <p className="mt-2 text-base font-medium text-white">
+                      Graduate roles with impact
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
