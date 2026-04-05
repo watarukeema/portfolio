@@ -15,6 +15,16 @@ export const socialLinks = [
 
 export const projects = [
   {
+    title: "Formation Studio",
+    tags: ["JavaScript", "Canvas", "Timeline UI", "Product Design"],
+    desc: "Built a choreography planning tool for mapping dance formations against video or audio, with draggable stage positions, timed keyframes, hold-or-morph transitions, JSON import/export, autosave, and keyboard-based editing controls.",
+    github: "https://github.com/watarukeema/formation-studio",
+    demo: "https://watarukeema.github.io/formation-studio/",
+    image: "/formation-studio-ui.png",
+    imageAlt: "Formation Studio interface showing a dancer formation editor and synced timeline",
+    featured: true,
+  },
+  {
     title: "AutoSpot Smart Parking",
     tags: ["Flutter", "API", "Product"],
     desc: "Built wallet, payment, and parking session flows for a smart parking system with a focus on smooth user experience and app usability.",

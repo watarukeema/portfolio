@@ -11,6 +11,7 @@ import {
 
 export default function App() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const resumeHref = "/Resume-Jansen.pdf";
 
   const handleMobileNavClick = () => {
     setIsMobileNavOpen(false);
@@ -40,6 +41,14 @@ export default function App() {
                   {link.label}
                 </a>
               ))}
+              <a
+                href={resumeHref}
+                target="_blank"
+                rel="noreferrer"
+                className="transition hover:text-white"
+              >
+                Resume
+              </a>
             </div>
 
             <button
@@ -70,6 +79,15 @@ export default function App() {
                     {link.label}
                   </a>
                 ))}
+                <a
+                  href={resumeHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 transition hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
+                  onClick={handleMobileNavClick}
+                >
+                  Resume
+                </a>
               </div>
             </div>
           ) : null}
@@ -110,6 +128,9 @@ export default function App() {
                 <div className="mt-8 flex flex-wrap gap-3">
                   <ActionLink href="#projects" variant="primary">
                     View Projects
+                  </ActionLink>
+                  <ActionLink href={resumeHref} external>
+                    View Resume
                   </ActionLink>
                   {socialLinks.map((link) => (
                     <ActionLink key={link.href} href={link.href} external>
@@ -253,6 +274,9 @@ export default function App() {
                   variant="primary"
                 >
                   Email Me
+                </ActionLink>
+                <ActionLink href={resumeHref} external>
+                  Resume
                 </ActionLink>
                 {socialLinks.map((link) => (
                   <ActionLink key={link.href} href={link.href} external>

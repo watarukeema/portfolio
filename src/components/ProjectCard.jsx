@@ -7,8 +7,19 @@ export default function ProjectCard({ project }) {
           : "border-white/10 bg-white/[0.02]"
       }`}
     >
+      {project.image ? (
+        <div className="mb-5 overflow-hidden rounded-2xl border border-white/10 bg-black/40">
+          <img
+            src={project.image}
+            alt={project.imageAlt || `${project.title} screenshot`}
+            className="h-52 w-full object-cover object-top transition duration-300 group-hover:scale-[1.02]"
+            loading="lazy"
+          />
+        </div>
+      ) : null}
+
       <div className="flex items-start justify-between gap-4">
-        <div>
+        <div className="min-w-0">
           {project.featured && (
             <span className="mb-3 inline-flex rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-zinc-300">
               Featured
@@ -17,14 +28,26 @@ export default function ProjectCard({ project }) {
           <h3 className="text-xl font-semibold text-white">{project.title}</h3>
         </div>
 
-        <a
-          href={project.github}
-          target="_blank"
-          rel="noreferrer"
-          className="shrink-0 text-sm text-zinc-400 transition group-hover:text-white"
-        >
-          GitHub →
-        </a>
+        <div className="flex shrink-0 gap-4 text-sm text-zinc-400">
+          {project.demo ? (
+            <a
+              href={project.demo}
+              target="_blank"
+              rel="noreferrer"
+              className="transition hover:text-white"
+            >
+              Live →
+            </a>
+          ) : null}
+          <a
+            href={project.github}
+            target="_blank"
+            rel="noreferrer"
+            className="transition group-hover:text-white"
+          >
+            GitHub →
+          </a>
+        </div>
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
