@@ -15,6 +15,15 @@ export const socialLinks = [
 
 export const projects = [
   {
+    title: "Job Fit Agent",
+    tags: ["TypeScript", "Express", "OpenAI API", "React", "Zod"],
+    desc: "Built an AI-powered job application assistant that analyzes job descriptions, scores role fit, flags risks, and generates tailored application guidance for junior software roles using structured LLM outputs.",
+    github: "https://github.com/watarukeema/job-fit-agent",
+    image: "/job fit agent page .png",
+    imageAlt: "Job Fit Agent interface showing a structured job analysis result",
+    featured: true,
+  },
+  {
     title: "Formation Studio",
     tags: ["JavaScript", "Canvas", "Timeline UI", "Product Design"],
     desc: "Built a choreography planning tool for mapping dance formations against video or audio, with draggable stage positions, timed keyframes, hold-or-morph transitions, JSON import/export, autosave, and keyboard-based editing controls.",
@@ -43,6 +52,7 @@ export const projects = [
     tags: ["React", "Vite", "TailwindCSS", "Vercel"],
     desc: "Designed and built a personal portfolio in React and TailwindCSS to present projects, skills, and technical interests with a responsive layout and lightweight deployment workflow.",
     github: "https://github.com/watarukeema/portfolio",
+    demo: "https://watarukema.dev/",
   },
   {
     title: "Music Genre Classification",
@@ -60,6 +70,6 @@ export const projects = [
 
 export const skills = {
   Languages: ["Python", "TypeScript", "Java", "SQL", "Rust"],
-  Frameworks: ["React", "Flutter", "Express.js", "Supabase"],
-  Tools: ["Git", "Docker", "PostgreSQL", "Linux", "Vercel"],
+  Frameworks: ["React", "Flutter", "Express.js", "Supabase", "Node.js"],
+  Tools: ["Git", "Docker", "PostgreSQL", "Linux", "Vercel", "OpenAI API"],
 };

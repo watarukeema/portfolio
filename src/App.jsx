@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ActionLink from "./components/ActionLink.jsx";
 import ProjectCard from "./components/ProjectCard.jsx";
 import SectionHeading from "./components/SectionHeading.jsx";
@@ -11,14 +11,136 @@ import {
 
 export default function App() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [previewNoticeProject, setPreviewNoticeProject] = useState(null);
+  const [imagePreviewProject, setImagePreviewProject] = useState(null);
   const resumeHref = "/Resume-Jansen.pdf";
+  const unavailableDemoMessage =
+    "This project is not live yet. The public demo is coming soon, but the code is available on GitHub in the meantime.";
 
   const handleMobileNavClick = () => {
     setIsMobileNavOpen(false);
   };
 
+  const closePreviewNotice = useCallback(() => {
+    setPreviewNoticeProject(null);
+  }, []);
+
+  const closeImagePreview = useCallback(() => {
+    setImagePreviewProject(null);
+  }, []);
+
+  useEffect(() => {
+    if (!previewNoticeProject && !imagePreviewProject) {
+      return undefined;
+    }
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        closePreviewNotice();
+        closeImagePreview();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [
+    closeImagePreview,
+    closePreviewNotice,
+    imagePreviewProject,
+    previewNoticeProject,
+  ]);
+
   return (
     <div className="min-h-screen bg-black text-white antialiased">
+      {previewNoticeProject ? (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-6 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="preview-notice-title"
+          onClick={closePreviewNotice}
+        >
+          <div
+            className="w-full max-w-md rounded-3xl border border-white/15 bg-zinc-950 p-6 shadow-2xl shadow-black/50"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-4 inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-zinc-400">
+              Demo coming soon
+            </div>
+            <h2
+              id="preview-notice-title"
+              className="text-2xl font-semibold text-white"
+            >
+              {previewNoticeProject.title} is not live yet
+            </h2>
+            <p className="mt-4 leading-7 text-zinc-300">
+              {unavailableDemoMessage}
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a
+                href={previewNoticeProject.github}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-zinc-200"
+              >
+                View GitHub
+              </a>
+              <button
+                type="button"
+                className="rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
+                onClick={closePreviewNotice}
+              >
+                Back to projects
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {imagePreviewProject ? (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 px-4 py-6 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="image-preview-title"
+          onClick={closeImagePreview}
+        >
+          <div
+            className="flex max-h-full w-full max-w-6xl flex-col"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-3 flex items-center justify-between gap-4">
+              <h2
+                id="image-preview-title"
+                className="text-base font-semibold text-white sm:text-lg"
+              >
+                {imagePreviewProject.title}
+              </h2>
+              <button
+                type="button"
+                className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
+                onClick={closeImagePreview}
+              >
+                Close
+              </button>
+            </div>
+            <div className="overflow-auto rounded-3xl border border-white/15 bg-black/70 p-2">
+              <img
+                src={imagePreviewProject.image}
+                alt={
+                  imagePreviewProject.imageAlt ||
+                  `${imagePreviewProject.title} screenshot`
+                }
+                className="mx-auto max-h-[78vh] w-auto max-w-full rounded-2xl object-contain"
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <div className="fixed inset-0 -z-10">
         <div className="absolute left-1/2 top-0 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-white/5 blur-3xl" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_35%)]" />
@@ -180,7 +302,12 @@ export default function App() {
 
             <div className="mt-10 grid gap-5 md:grid-cols-2">
               {projects.map((project) => (
-                <ProjectCard key={project.title} project={project} />
+                <ProjectCard
+                  key={project.title}
+                  project={project}
+                  onImagePreview={setImagePreviewProject}
+                  onUnavailableDemo={setPreviewNoticeProject}
+                />
               ))}
             </div>
           </section>
@@ -212,7 +339,17 @@ export default function App() {
 
           <section id="about" className="scroll-mt-24 py-20">
             <div className="grid gap-10 md:grid-cols-[1fr_1.2fr] md:items-start">
-              <SectionHeading eyebrow="About" title="A little about me" />
+              <div>
+                <SectionHeading eyebrow="About" title="A little about me" />
+                <div className="mt-8 max-w-sm overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+                  <img
+                    src="/profile1.jpg"
+                    alt="Jansen standing near the waterfront"
+                    className="aspect-square w-full object-cover object-center"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
 
               <div className="space-y-6">
                 <div className="space-y-5 text-zinc-300 leading-8">

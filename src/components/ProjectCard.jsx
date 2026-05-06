@@ -1,4 +1,10 @@
-export default function ProjectCard({ project }) {
+export default function ProjectCard({
+  project,
+  onImagePreview,
+  onUnavailableDemo,
+}) {
+  const liveButtonClassName = "transition hover:text-white";
+
   return (
     <div
       className={`group rounded-3xl border p-6 transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.05] ${
@@ -8,14 +14,19 @@ export default function ProjectCard({ project }) {
       }`}
     >
       {project.image ? (
-        <div className="mb-5 overflow-hidden rounded-2xl border border-white/10 bg-black/40">
+        <button
+          type="button"
+          className="mb-5 block w-full overflow-hidden rounded-2xl border border-white/10 bg-black/40 text-left focus:outline-none focus:ring-2 focus:ring-white/40"
+          onClick={() => onImagePreview(project)}
+          aria-label={`View full ${project.title} screenshot`}
+        >
           <img
             src={project.image}
             alt={project.imageAlt || `${project.title} screenshot`}
             className="h-52 w-full object-cover object-top transition duration-300 group-hover:scale-[1.02]"
             loading="lazy"
           />
-        </div>
+        </button>
       ) : null}
 
       <div className="flex items-start justify-between gap-4">
@@ -34,11 +45,19 @@ export default function ProjectCard({ project }) {
               href={project.demo}
               target="_blank"
               rel="noreferrer"
-              className="transition hover:text-white"
+              className={liveButtonClassName}
             >
               Live →
             </a>
-          ) : null}
+          ) : (
+            <button
+              type="button"
+              className={liveButtonClassName}
+              onClick={() => onUnavailableDemo(project)}
+            >
+              Live →
+            </button>
+          )}
           <a
             href={project.github}
             target="_blank"
