@@ -1,435 +1,595 @@
 import { useCallback, useEffect, useState } from "react";
-import ActionLink from "./components/ActionLink.jsx";
-import ProjectCard from "./components/ProjectCard.jsx";
-import SectionHeading from "./components/SectionHeading.jsx";
 import {
+  archiveProjects,
+  featuredProjects,
   navigationLinks,
-  projects,
-  skills,
+  signals,
+  skillGroups,
   socialLinks,
 } from "./data/portfolio.js";
 
+const resumeHref = "/Resume-Jansen.pdf";
+const email = "jansen.jans.wk@gmail.com";
+
+function Arrow() {
+  return <span aria-hidden="true">↗</span>;
+}
+
+function ActionLink({ href, children, external = false, primary = false }) {
+  return (
+    <a
+      href={href}
+      className={`action-link ${primary ? "action-link--primary" : ""}`}
+      {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+    >
+      {children}
+      <Arrow />
+    </a>
+  );
+}
+
+function SectionIntro({ label, title, description }) {
+  return (
+    <div className="section-intro reveal">
+      <p className="section-label">{label}</p>
+      <h2>{title}</h2>
+      {description ? <p className="section-intro__description">{description}</p> : null}
+    </div>
+  );
+}
+
+function OrbitalMark() {
+  return (
+    <div className="orbital-mark" aria-hidden="true">
+      <span className="orbital-mark__core" />
+      <span className="orbital-mark__ring orbital-mark__ring--one" />
+      <span className="orbital-mark__ring orbital-mark__ring--two" />
+      <span className="orbital-mark__point orbital-mark__point--one" />
+      <span className="orbital-mark__point orbital-mark__point--two" />
+      <span className="orbital-mark__point orbital-mark__point--three" />
+    </div>
+  );
+}
+
+function ProjectOrbit({ activeProject, onSelect }) {
+  return (
+    <div
+      className={`project-orbit project-orbit--${activeProject.id}`}
+      aria-label="Featured project selector"
+    >
+      <div key={activeProject.id} className="project-orbit__canvas" aria-hidden="true">
+        <span className="orbit-ring orbit-ring--one" />
+        <span className="orbit-ring orbit-ring--two" />
+        <span className="orbit-ring orbit-ring--three" />
+        <span className={`orbit-center planet--${activeProject.id}`}>
+          <small>selected</small>
+          <span className="orbit-center__planet">
+            <span className="planet-surface" />
+          </span>
+          <strong>{activeProject.title}</strong>
+        </span>
+      </div>
+      <div className="project-orbit__nodes" role="tablist" aria-label="Select a project">
+        {featuredProjects.map((project) => (
+          <button
+            key={project.id}
+            type="button"
+            role="tab"
+            aria-selected={activeProject.id === project.id}
+            aria-controls="project-detail"
+            className={`orbit-node planet--${project.id} ${project.position} ${
+              activeProject.id === project.id ? "is-active" : ""
+            }`}
+            onClick={() => onSelect(project.id)}
+          >
+            <span className="orbit-node__point">
+              <span className="planet-surface" />
+            </span>
+            <span className="orbit-node__copy">
+              <strong>{project.title}</strong>
+              <small>{project.type}</small>
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ArchitectureVisual() {
+  return (
+    <div className="architecture-visual" aria-label="Ignite service architecture diagram">
+      <div className="architecture-node architecture-node--profile">
+        <small>client</small>
+        <strong>Profile UI</strong>
+      </div>
+      <div className="architecture-node architecture-node--api">
+        <small>service</small>
+        <strong>Express API</strong>
+      </div>
+      <div className="architecture-node architecture-node--auth">
+        <small>access</small>
+        <strong>Auth</strong>
+      </div>
+      <div className="architecture-node architecture-node--data">
+        <small>storage</small>
+        <strong>Postgres</strong>
+      </div>
+      <svg viewBox="0 0 700 440" aria-hidden="true">
+        <path d="M155 120 C245 120 255 220 350 220" />
+        <path d="M350 220 C455 220 465 105 560 105" />
+        <path d="M350 220 C455 220 465 335 560 335" />
+      </svg>
+    </div>
+  );
+}
+
+function ProjectDetail({ project, onImagePreview, onUnavailableDemo }) {
+  return (
+    <article
+      id="project-detail"
+      key={project.id}
+      className="project-detail"
+      role="tabpanel"
+      aria-label={`${project.title} project details`}
+    >
+      <div className="project-detail__visual">
+        {project.displayType === "image" ? (
+          <button
+            type="button"
+            className="project-image"
+            onClick={() => onImagePreview(project)}
+            aria-label={`View full ${project.title} screenshot`}
+          >
+            <img src={project.image} alt={project.imageAlt} />
+            <span>Open full image <Arrow /></span>
+          </button>
+        ) : (
+          <ArchitectureVisual />
+        )}
+        <div className="technical-notes">
+          {project.technicalNotes.map(([label, value]) => (
+            <div key={label}>
+              <small>{label}</small>
+              <span>{value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="project-detail__copy">
+        <p className="project-type">{project.type}</p>
+        <h3>{project.title}</h3>
+        <p className="project-summary">{project.summary}</p>
+        <dl className="project-decisions">
+          <div>
+            <dt>Problem</dt>
+            <dd>{project.challenge}</dd>
+          </div>
+          <div>
+            <dt>My contribution</dt>
+            <dd>{project.contribution}</dd>
+          </div>
+          <div>
+            <dt>Result</dt>
+            <dd>{project.outcome}</dd>
+          </div>
+        </dl>
+        <div className="tag-list">
+          {project.tags.map((tag) => (
+            <span key={tag}>{tag}</span>
+          ))}
+        </div>
+        <div className="project-actions">
+          <ActionLink href={project.github} external primary>
+            View code
+          </ActionLink>
+          {project.demo ? (
+            <ActionLink href={project.demo} external>
+              Live project
+            </ActionLink>
+          ) : (
+            <button
+              type="button"
+              className="action-link"
+              onClick={() => onUnavailableDemo(project)}
+            >
+              Demo status
+              <Arrow />
+            </button>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function Modal({ children, label, onClose, wide = false }) {
+  return (
+    <div className="modal-backdrop" role="presentation" onClick={onClose}>
+      <div
+        className={`modal ${wide ? "modal--wide" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label={label}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button type="button" className="modal__close" onClick={onClose}>
+          Close
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
+  const [activeProjectId, setActiveProjectId] = useState(featuredProjects[0].id);
+  const [activeSection, setActiveSection] = useState("home");
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [previewNoticeProject, setPreviewNoticeProject] = useState(null);
   const [imagePreviewProject, setImagePreviewProject] = useState(null);
-  const resumeHref = "/Resume-Jansen.pdf";
-  const unavailableDemoMessage =
-    "This project is not live yet. The public demo is coming soon, but the code is available on GitHub in the meantime.";
+  const [emailCopied, setEmailCopied] = useState(false);
 
-  const handleMobileNavClick = () => {
-    setIsMobileNavOpen(false);
-  };
+  const activeProject =
+    featuredProjects.find((project) => project.id === activeProjectId) ||
+    featuredProjects[0];
 
-  const closePreviewNotice = useCallback(() => {
+  const closeModals = useCallback(() => {
     setPreviewNoticeProject(null);
-  }, []);
-
-  const closeImagePreview = useCallback(() => {
     setImagePreviewProject(null);
   }, []);
 
   useEffect(() => {
-    if (!previewNoticeProject && !imagePreviewProject) {
-      return undefined;
-    }
+    const sections = document.querySelectorAll("main section[id]");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]) setActiveSection(visible[0].target.id);
+      },
+      { rootMargin: "-35% 0px -55%", threshold: [0, 0.2, 0.5] },
+    );
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
 
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") {
-        closePreviewNotice();
-        closeImagePreview();
-      }
+  useEffect(() => {
+    const reveals = document.querySelectorAll(".reveal");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.14 },
+    );
+    reveals.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!previewNoticeProject && !imagePreviewProject) return undefined;
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") closeModals();
     };
-
-    document.addEventListener("keydown", handleKeyDown);
-
+    document.body.classList.add("modal-open");
+    document.addEventListener("keydown", onKeyDown);
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      document.body.classList.remove("modal-open");
+      document.removeEventListener("keydown", onKeyDown);
     };
-  }, [
-    closeImagePreview,
-    closePreviewNotice,
-    imagePreviewProject,
-    previewNoticeProject,
-  ]);
+  }, [closeModals, imagePreviewProject, previewNoticeProject]);
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(email);
+      setEmailCopied(true);
+      window.setTimeout(() => setEmailCopied(false), 2200);
+    } catch {
+      window.location.href = `mailto:${email}`;
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-black text-white antialiased">
-      {previewNoticeProject ? (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-6 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="preview-notice-title"
-          onClick={closePreviewNotice}
-        >
-          <div
-            className="w-full max-w-md rounded-3xl border border-white/15 bg-zinc-950 p-6 shadow-2xl shadow-black/50"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="mb-4 inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-zinc-400">
-              Demo coming soon
-            </div>
-            <h2
-              id="preview-notice-title"
-              className="text-2xl font-semibold text-white"
+    <div className="site-shell">
+      <div className="ambient-orbit ambient-orbit--one" aria-hidden="true" />
+      <div className="ambient-orbit ambient-orbit--two" aria-hidden="true" />
+
+      <header className="site-header">
+        <a className="brand" href="#home" aria-label="Jansen, back to top">
+          <OrbitalMark />
+          <span>
+            <strong>Jansen</strong>
+            <small>Software engineer</small>
+          </span>
+        </a>
+        <nav className="desktop-nav" aria-label="Main navigation">
+          {navigationLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className={activeSection === link.href.slice(1) ? "active" : ""}
             >
-              {previewNoticeProject.title} is not live yet
-            </h2>
-            <p className="mt-4 leading-7 text-zinc-300">
-              {unavailableDemoMessage}
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <a
-                href={previewNoticeProject.github}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-zinc-200"
-              >
-                View GitHub
-              </a>
-              <button
-                type="button"
-                className="rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
-                onClick={closePreviewNotice}
-              >
-                Back to projects
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {imagePreviewProject ? (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 px-4 py-6 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="image-preview-title"
-          onClick={closeImagePreview}
-        >
-          <div
-            className="flex max-h-full w-full max-w-6xl flex-col"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="mb-3 flex items-center justify-between gap-4">
-              <h2
-                id="image-preview-title"
-                className="text-base font-semibold text-white sm:text-lg"
-              >
-                {imagePreviewProject.title}
-              </h2>
-              <button
-                type="button"
-                className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
-                onClick={closeImagePreview}
-              >
-                Close
-              </button>
-            </div>
-            <div className="overflow-auto rounded-3xl border border-white/15 bg-black/70 p-2">
-              <img
-                src={imagePreviewProject.image}
-                alt={
-                  imagePreviewProject.imageAlt ||
-                  `${imagePreviewProject.title} screenshot`
-                }
-                className="mx-auto max-h-[78vh] w-auto max-w-full rounded-2xl object-contain"
-              />
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute left-1/2 top-0 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-white/5 blur-3xl" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_35%)]" />
-      </div>
-
-      <div className="mx-auto max-w-6xl px-6">
-        <header className="sticky top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur">
-          <nav className="mx-auto flex min-h-16 max-w-6xl items-center justify-between py-3">
-            <a href="#home" className="text-sm font-semibold tracking-wide text-white">
-              Jansen
+              {link.label}
             </a>
-
-            <div className="hidden items-center gap-6 text-sm text-zinc-400 md:flex">
-              {navigationLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="transition hover:text-white"
-                >
-                  {link.label}
-                </a>
-              ))}
+          ))}
+          <a href={resumeHref} target="_blank" rel="noreferrer">
+            Resume
+          </a>
+        </nav>
+        <button
+          type="button"
+          className="menu-button"
+          aria-expanded={isMobileNavOpen}
+          aria-controls="mobile-nav"
+          onClick={() => setIsMobileNavOpen((open) => !open)}
+        >
+          {isMobileNavOpen ? "Close" : "Menu"}
+        </button>
+        {isMobileNavOpen ? (
+          <nav id="mobile-nav" className="mobile-nav" aria-label="Mobile navigation">
+            {navigationLinks.map((link) => (
               <a
-                href={resumeHref}
-                target="_blank"
-                rel="noreferrer"
-                className="transition hover:text-white"
+                key={link.href}
+                href={link.href}
+                onClick={() => setIsMobileNavOpen(false)}
               >
-                Resume
+                {link.label}
               </a>
-            </div>
-
-            <button
-              type="button"
-              className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-200 transition hover:border-white/20 hover:bg-white/10 md:hidden"
-              aria-expanded={isMobileNavOpen}
-              aria-controls="mobile-navigation"
-              aria-label="Toggle navigation menu"
-              onClick={() => setIsMobileNavOpen((open) => !open)}
-            >
-              Menu
-            </button>
+            ))}
+            <a href={resumeHref} target="_blank" rel="noreferrer">
+              Resume
+            </a>
           </nav>
+        ) : null}
+      </header>
 
-          {isMobileNavOpen ? (
-            <div
-              id="mobile-navigation"
-              className="border-t border-white/10 pb-4 md:hidden"
-            >
-              <div className="flex flex-col gap-2 pt-4 text-sm text-zinc-300">
-                {navigationLinks.map((link) => (
-                  <a
-                    key={link.href}
-                    href={link.href}
-                    className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 transition hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
-                    onClick={handleMobileNavClick}
-                  >
-                    {link.label}
-                  </a>
-                ))}
+      <main>
+        <section id="home" className="hero">
+          <div className="hero__copy">
+            <p className="hero__availability reveal">
+              <span />
+              Open to 2026 graduate roles · Open to relocate
+            </p>
+            <h1 className="reveal">
+              <span>Hi, I’m</span>
+              <strong>Jansen.</strong>
+              <em>Software engineer building useful systems.</em>
+            </h1>
+            <p className="hero__lead reveal">
+              I build backend systems, interactive tools, and data-informed
+              products. I enjoy finding structure in unclear problems and
+              turning it into software people can actually use.
+            </p>
+            <div className="hero__facts reveal">
+              <span>UNSW Computer Science Graduate</span>
+              <span>Full Australian work rights</span>
+              <span>Open to relocate</span>
+              <span>Software + data</span>
+            </div>
+            <div className="hero__actions reveal">
+              <ActionLink href="#work" primary>
+                Explore projects
+              </ActionLink>
+              <ActionLink href={resumeHref} external>
+                View resume
+              </ActionLink>
+            </div>
+          </div>
+
+          <div className="hero__visual reveal" aria-hidden="true">
+            <div className="hero-orbit">
+              <span className="hero-orbit__ring hero-orbit__ring--one" />
+              <span className="hero-orbit__ring hero-orbit__ring--two" />
+              <span className="hero-orbit__ring hero-orbit__ring--three" />
+              <span className="hero-orbit__core">
+                <strong>Jansen</strong>
+                <small>
+                  <span>Software</span>
+                  <span>Engineer</span>
+                </small>
+              </span>
+              <span className="hero-orbit__label hero-orbit__label--one">backend systems</span>
+              <span className="hero-orbit__label hero-orbit__label--two">product</span>
+              <span className="hero-orbit__label hero-orbit__label--three">data analysis</span>
+              <span className="hero-orbit__dot hero-orbit__dot--one" />
+              <span className="hero-orbit__dot hero-orbit__dot--two" />
+              <span className="hero-orbit__dot hero-orbit__dot--three" />
+            </div>
+          </div>
+
+          <div className="hero__current reveal">
+            <span>Now</span>
+            <p>
+              Completing the Google Data Analytics Certificate while building
+              new software and looking for a 2026 graduate role.
+            </p>
+          </div>
+        </section>
+
+        <section id="work" className="section section--work">
+          <SectionIntro
+            label="Selected projects"
+            title="Three projects, viewed from different angles."
+            description="Choose a project to see the problem, the decisions I made, and what the final system needed to do."
+          />
+          <div className="project-workspace reveal">
+            <ProjectOrbit activeProject={activeProject} onSelect={setActiveProjectId} />
+            <ProjectDetail
+              project={activeProject}
+              onImagePreview={setImagePreviewProject}
+              onUnavailableDemo={setPreviewNoticeProject}
+            />
+          </div>
+
+          <div className="archive reveal">
+            <div className="archive__intro">
+              <p className="section-label">More work</p>
+              <h3>Smaller builds and technical explorations.</h3>
+            </div>
+            <div className="archive__list">
+              {archiveProjects.map((project) => (
                 <a
-                  href={resumeHref}
+                  key={project.title}
+                  href={project.demo || project.github}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 transition hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
-                  onClick={handleMobileNavClick}
+                  className="archive-row"
                 >
-                  Resume
+                  <div>
+                    <small>{project.type}</small>
+                    <strong>{project.title}</strong>
+                  </div>
+                  <p>{project.desc}</p>
+                  <span>{project.tags.join(" · ")}</span>
+                  <Arrow />
                 </a>
-              </div>
+              ))}
             </div>
-          ) : null}
-        </header>
+          </div>
+        </section>
 
-        <main>
-          <section
-            id="home"
-            className="flex min-h-[calc(100vh-4rem)] items-center py-20"
-          >
-            <div className="grid gap-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(18rem,24rem)] lg:items-end">
-              <div className="max-w-3xl">
-                <div className="mb-6 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-zinc-300">
-                  Open to Graduate Software Engineer Opportunities
-                </div>
-
-                <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-zinc-400">
-                  Software Engineer
+        <section id="about" className="section section--about">
+          <SectionIntro
+            label="About"
+            title="Curious across the stack, grounded in the outcome."
+          />
+          <div className="about-layout">
+            <div className="about-main reveal">
+              <div className="about-photo">
+                <img
+                  src="/profile1.jpg"
+                  alt="Jansen standing near the waterfront"
+                  loading="lazy"
+                />
+              </div>
+              <div className="about-copy">
+                <p className="about-copy__lead">
+                  I’m a UNSW Computer Science graduate who likes turning unclear
+                  problems into systems people can actually use.
                 </p>
-
-                <h1 className="text-5xl font-semibold tracking-tight text-white sm:text-6xl md:text-7xl">
-                  Jansen
-                </h1>
-
-                <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-300 sm:text-xl">
-                  I build backend-heavy products with a strong bias for clear
-                  APIs, reliable systems, and interfaces that do not get in the
-                  user's way.
+                <p>
+                  That has taken me through API design, authentication,
+                  databases, mobile product flows, networking, interactive
+                  canvas tools, and machine learning experiments. The
+                  technologies change, but my approach stays consistent:
+                  understand the real problem, make the structure clear, then
+                  ship something useful.
                 </p>
-
-                <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400 sm:text-lg">
-                  My work spans networking, student platforms, mobile product
-                  flows, and machine learning projects. I like messy technical
-                  problems that need both engineering discipline and product
-                  judgment.
+                <p>
+                  I am currently developing a stronger data-analysis practice
+                  alongside software engineering, with the goal of building
+                  products that help people make clearer decisions.
                 </p>
-
-                <div className="mt-8 flex flex-wrap gap-3">
-                  <ActionLink href="#projects" variant="primary">
-                    View Projects
-                  </ActionLink>
-                  <ActionLink href={resumeHref} external>
-                    View Resume
-                  </ActionLink>
-                  {socialLinks.map((link) => (
-                    <ActionLink key={link.href} href={link.href} external>
-                      {link.label}
-                    </ActionLink>
+                <div className="skills">
+                  {skillGroups.map((group) => (
+                    <div key={group.title}>
+                      <h3>{group.title}</h3>
+                      <p>{group.items.join(" · ")}</p>
+                    </div>
                   ))}
                 </div>
               </div>
+            </div>
 
-              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-                <p className="text-xs font-medium uppercase tracking-[0.24em] text-zinc-500">
-                  What I care about
-                </p>
-                <div className="mt-5 space-y-4">
-                  <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                    <p className="text-sm text-zinc-500">Systems</p>
-                    <p className="mt-2 text-base leading-7 text-zinc-200">
-                      Building dependable backend flows, data models, and
-                      service logic that scale without turning brittle.
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                    <p className="text-sm text-zinc-500">Product</p>
-                    <p className="mt-2 text-base leading-7 text-zinc-200">
-                      Keeping user experience in view so technical decisions
-                      improve the product instead of fighting it.
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                    <p className="text-sm text-zinc-500">Growth</p>
-                    <p className="mt-2 text-base leading-7 text-zinc-200">
-                      Looking for a graduate role with strong engineering
-                      mentorship, meaningful ownership, and real product work.
-                    </p>
-                  </div>
-                </div>
+            <aside className="signals reveal">
+              <div className="signals__heading">
+                <p className="section-label">Signals</p>
+                <h3>What I am learning and exploring now.</h3>
               </div>
-            </div>
-          </section>
-
-          <section id="projects" className="scroll-mt-24 py-20">
-            <SectionHeading
-              eyebrow="Projects"
-              title="Selected work"
-              description="A few projects that reflect my interests across backend engineering, systems, and product-focused development."
-            />
-
-            <div className="mt-10 grid gap-5 md:grid-cols-2">
-              {projects.map((project) => (
-                <ProjectCard
-                  key={project.title}
-                  project={project}
-                  onImagePreview={setImagePreviewProject}
-                  onUnavailableDemo={setPreviewNoticeProject}
-                />
-              ))}
-            </div>
-          </section>
-
-          <section id="skills" className="scroll-mt-24 py-20">
-            <SectionHeading eyebrow="Skills" title="Tools I work with" />
-
-            <div className="mt-10 grid gap-5 md:grid-cols-3">
-              {Object.entries(skills).map(([category, items]) => (
-                <div
-                  key={category}
-                  className="rounded-2xl border border-white/10 bg-white/[0.03] p-6"
-                >
-                  <h3 className="text-lg font-semibold text-white">{category}</h3>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {items.map((item) => (
-                      <span
-                        key={item}
-                        className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm text-zinc-300"
-                      >
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section id="about" className="scroll-mt-24 py-20">
-            <div className="grid gap-10 md:grid-cols-[1fr_1.2fr] md:items-start">
-              <div>
-                <SectionHeading eyebrow="About" title="A little about me" />
-                <div className="mt-8 max-w-sm overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
-                  <img
-                    src="/profile1.jpg"
-                    alt="Jansen standing near the waterfront"
-                    className="aspect-square w-full object-cover object-center"
-                    loading="lazy"
-                  />
-                </div>
+              <div className="signals__list">
+                {signals.map((signal) => {
+                  const SignalTag = signal.href ? "a" : "article";
+                  return (
+                    <SignalTag
+                      key={signal.title}
+                      className="signal"
+                      {...(signal.href
+                        ? { href: signal.href, target: "_blank", rel: "noreferrer" }
+                        : {})}
+                    >
+                      <span>{signal.status}</span>
+                      <h4>{signal.title}</h4>
+                      <p>{signal.description}</p>
+                      {signal.href ? <Arrow /> : null}
+                    </SignalTag>
+                  );
+                })}
               </div>
+            </aside>
+          </div>
+        </section>
 
-              <div className="space-y-6">
-                <div className="space-y-5 text-zinc-300 leading-8">
-                  <p>
-                    I’m Jansen, a software engineer drawn to backend systems,
-                    application architecture, and the practical decisions that
-                    make software hold up outside the classroom.
-                  </p>
-                  <p>
-                    I have worked across API design, authentication flows,
-                    database-backed products, mobile feature development, and
-                    networking projects. That range has made me comfortable
-                    moving between low-level technical detail and the broader
-                    product shape of a project.
-                  </p>
-                  <p>
-                    The kind of work I enjoy most is turning an unclear problem
-                    into something structured: defining the data model, shaping
-                    the service boundaries, and making sure the final experience
-                    feels simple for the person using it.
-                  </p>
-                </div>
+        <section id="contact" className="section section--contact">
+          <div className="contact-copy reveal">
+            <p className="section-label">Contact</p>
+            <h2>Have a useful problem to work on?</h2>
+            <p>
+              I’m open to graduate software engineering roles, collaborations,
+              and conversations about products that need both technical
+              structure and curiosity.
+            </p>
+            <button type="button" className="action-link action-link--primary" onClick={copyEmail}>
+              {emailCopied ? "Email copied" : "Copy my email"}
+              <Arrow />
+            </button>
+          </div>
+          <div className="contact-links reveal">
+            <a href={`mailto:${email}`}>
+              <span>Email</span>
+              <strong>{email}</strong>
+              <Arrow />
+            </a>
+            {socialLinks.map((link) => (
+              <a key={link.href} href={link.href} target="_blank" rel="noreferrer">
+                <span>{link.label}</span>
+                <strong>Open profile</strong>
+                <Arrow />
+              </a>
+            ))}
+          </div>
+        </section>
+      </main>
 
-                <div className="grid gap-4 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                    <p className="text-sm text-zinc-500">Interested in</p>
-                    <p className="mt-2 text-base font-medium text-white">
-                      Backend & Frontend engineering
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                    <p className="text-sm text-zinc-500">Comfortable with</p>
-                    <p className="mt-2 text-base font-medium text-white">
-                      Backend delivery
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                    <p className="text-sm text-zinc-500">Looking for</p>
-                    <p className="mt-2 text-base font-medium text-white">
-                      Graduate roles with impact
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+      <footer className="site-footer">
+        <a className="brand" href="#home">
+          <OrbitalMark />
+          <span><strong>Jansen</strong></span>
+        </a>
+        <p>Software, systems, and signals.</p>
+        <span>© {new Date().getFullYear()} · Sydney, Australia</span>
+      </footer>
 
-          <section id="contact" className="scroll-mt-24 py-20">
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-8 sm:p-10">
-              <SectionHeading
-                eyebrow="Contact"
-                title="Let’s connect"
-                description="I’m currently open to graduate software engineering opportunities, collaborations, and conversations about building thoughtful products and systems."
-              />
+      {previewNoticeProject ? (
+        <Modal label={`${previewNoticeProject.title} demo status`} onClose={closeModals}>
+          <p className="section-label">Demo status</p>
+          <h2>{previewNoticeProject.title} is not live yet.</h2>
+          <p>
+            The public demo is still in progress, but the code and project
+            details are available on GitHub.
+          </p>
+          <ActionLink href={previewNoticeProject.github} external primary>
+            View GitHub
+          </ActionLink>
+        </Modal>
+      ) : null}
 
-              <div className="mt-8 flex flex-wrap gap-3">
-                <ActionLink
-                  href="mailto:jansen.jans.wk@gmail.com"
-                  variant="primary"
-                >
-                  Email Me
-                </ActionLink>
-                <ActionLink href={resumeHref} external>
-                  Resume
-                </ActionLink>
-                {socialLinks.map((link) => (
-                  <ActionLink key={link.href} href={link.href} external>
-                    {link.label}
-                  </ActionLink>
-                ))}
-              </div>
-            </div>
-          </section>
-        </main>
-
-        <footer className="border-t border-white/10 py-8 text-sm text-zinc-500">
-          © {new Date().getFullYear()} Jansen. Built with React, Vite, Tailwind,
-          and deployed on Vercel.
-        </footer>
-      </div>
+      {imagePreviewProject ? (
+        <Modal label={`${imagePreviewProject.title} screenshot`} onClose={closeModals} wide>
+          <p className="section-label">{imagePreviewProject.type}</p>
+          <h2>{imagePreviewProject.title}</h2>
+          <img
+            className="modal__image"
+            src={imagePreviewProject.image}
+            alt={imagePreviewProject.imageAlt}
+          />
+        </Modal>
+      ) : null}
     </div>
   );
 }
