@@ -12,7 +12,17 @@ const resumeHref = "/Resume-Jansen.pdf";
 const email = "jansen.jans.wk@gmail.com";
 
 function Arrow() {
-  return <span aria-hidden="true">↗</span>;
+  return (
+    <svg
+      className="arrow-icon"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M4 12 12 4M6 4h6v6" />
+    </svg>
+  );
 }
 
 function ActionLink({ href, children, external = false, primary = false }) {

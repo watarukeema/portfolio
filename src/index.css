@@ -78,6 +78,18 @@ img {
   outline-offset: 4px;
 }
 
+.arrow-icon {
+  display: block;
+  width: 1em;
+  height: 1em;
+  flex: 0 0 auto;
+  overflow: visible;
+  stroke: currentColor;
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .site-shell {
   position: relative;
   min-height: 100vh;
