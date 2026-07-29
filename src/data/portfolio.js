@@ -136,10 +136,11 @@ export const skillGroups = [
 
 export const signals = [
   {
-    status: "In progress",
+    status: "Credential",
     title: "Google Data Analytics Certificate",
     description:
-      "Developing a stronger workflow for cleaning, analysing, and communicating data.",
+      "Google Data Analytics Professional Certificate, issued by Coursera in Jul 2026.",
+    href: "https://www.credly.com/badges/6c296227-d697-470b-b93b-b5bcd9c0de75",
   },
   {
     status: "Experiment",

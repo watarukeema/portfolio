@@ -416,7 +416,7 @@ export default function App() {
           <div className="hero__current reveal">
             <span>Now</span>
             <p>
-              Completing the Google Data Analytics Certificate while building
+              Google Data Analytics Professional Certificate holder, building
               new software and looking for a 2026 graduate role.
             </p>
           </div>
@@ -492,9 +492,10 @@ export default function App() {
                   ship something useful.
                 </p>
                 <p>
-                  I am currently developing a stronger data-analysis practice
-                  alongside software engineering, with the goal of building
-                  products that help people make clearer decisions.
+                  I recently earned the Google Data Analytics Professional
+                  Certificate and am applying that workflow alongside software
+                  engineering, with the goal of building products that help
+                  people make clearer decisions.
                 </p>
                 <div className="skills">
                   {skillGroups.map((group) => (
