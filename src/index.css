@@ -2327,6 +2327,7 @@ a.signal:hover {
     padding: 0.7rem;
     border: 1px solid var(--line);
     border-radius: 0.6rem;
+    inset: auto;
   }
 
   .orbit-node__badge {
@@ -2416,6 +2417,17 @@ a.signal:hover {
   .orbit-node {
     grid-template-columns: auto 1fr;
     align-items: center;
+    width: 100%;
+    transform: none;
+  }
+
+  .orbit-node__copy {
+    min-width: 0;
+  }
+
+  .orbit-node strong,
+  .orbit-node small {
+    overflow-wrap: anywhere;
   }
 
   .project-detail {
@@ -2466,6 +2478,13 @@ a.signal:hover {
 
   .data-story-visual__screen-controls div button {
     flex: 0 0 auto;
+    max-width: 7.4rem;
+    padding-inline: 0.45rem;
+  }
+
+  .data-story-visual__screen-controls > button {
+    min-width: 0;
+    padding-inline: 0.45rem;
   }
 
   .technical-notes {
