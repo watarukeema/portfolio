@@ -14,6 +14,30 @@ export const socialLinks = [
 
 export const featuredProjects = [
   {
+    id: "listening-lab",
+    title: "Listening Pattern Lab",
+    type: "Data product · Frontend",
+    isNew: true,
+    summary:
+      "An interactive data story where visitors can get to know me through listening patterns, then try the same analysis with sample, public, or personal Spotify data.",
+    challenge:
+      "A normal portfolio can say what I built, but it does not show much about how I notice patterns, explain data, or turn messy exports into something readable.",
+    contribution:
+      "Built the React experience, local Spotify JSON parser, filterable analysis views, public dataset path, guided onboarding, and privacy-first upload flow.",
+    outcome:
+      "Shipped a live portfolio-ready app that turns listening records into fast, understandable insights without saving user files on a server.",
+    tags: ["React", "TypeScript", "Data Analysis", "Visualization", "Privacy-first"],
+    github: "https://github.com/watarukeema/listening-pattern-lab",
+    demo: "https://listening-pattern-lab.vercel.app/",
+    displayType: "data-story",
+    position: "node--listening-lab",
+    technicalNotes: [
+      ["Input", "Spotify JSON"],
+      ["Analysis", "Local browser processing"],
+      ["Views", "Personal + public data"],
+    ],
+  },
+  {
     id: "job-fit",
     title: "Job Fit Agent",
     type: "AI product · Full-stack",
@@ -144,15 +168,15 @@ export const signals = [
   },
   {
     status: "Experiment",
-    title: "Music Genre Classification",
+    title: "Listening Pattern Lab",
     description:
-      "Comparing models on audio features and learning where the data limits the result.",
-    href: "https://github.com/watarukeema/EtherealEcho",
+      "A live software + data product for exploring listening history as a readable personal story.",
+    href: "https://listening-pattern-lab.vercel.app/",
   },
   {
-    status: "Next",
-    title: "Software + data product",
+    status: "Practice",
+    title: "Software + data storytelling",
     description:
-      "Planning a useful product where real analysis directly supports a clearer decision.",
+      "Turning raw records into product flows that explain the pattern without overwhelming the user.",
   },
 ];

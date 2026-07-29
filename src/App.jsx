@@ -92,6 +92,7 @@ function ProjectOrbit({ activeProject, onSelect }) {
             }`}
             onClick={() => onSelect(project.id)}
           >
+            {project.isNew ? <span className="orbit-node__badge">New</span> : null}
             <span className="orbit-node__point">
               <span className="planet-surface" />
             </span>
@@ -101,6 +102,147 @@ function ProjectOrbit({ activeProject, onSelect }) {
             </span>
           </button>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function DataStoryVisual({ onImagePreview }) {
+  const [activeSlide, setActiveSlide] = useState(0);
+  const bars = [
+    ["Story", 42],
+    ["Focus", 68],
+    ["Taste", 52],
+    ["Peak", 88],
+    ["Routine", 61],
+    ["Sample", 76],
+    ["Public", 47],
+    ["Upload", 72],
+  ];
+  const screenshots = [
+    {
+      src: "/listening-landing.png",
+      label: "Landing",
+      title: "Listening Pattern Lab landing",
+      type: "Listening Pattern Lab",
+      alt: "Listening Pattern Lab landing page",
+    },
+    {
+      src: "/listening-sample.png",
+      label: "Sample report",
+      title: "Sample visitor report",
+      type: "Listening Pattern Lab",
+      alt: "Listening Pattern Lab sample visitor report with filters and patterns",
+    },
+    {
+      src: "/listening-public-lab.png",
+      label: "Public lab",
+      title: "Public evidence lab",
+      type: "Listening Pattern Lab",
+      alt: "Listening Pattern Lab public music dataset section",
+    },
+  ];
+  const slides = [{ kind: "signals", label: "Signals" }, ...screenshots];
+  const slideCount = slides.length;
+  const currentSlide = slides[activeSlide];
+  const showPreviousSlide = () => {
+    setActiveSlide((slide) => (slide === 0 ? slideCount - 1 : slide - 1));
+  };
+  const showNextSlide = () => {
+    setActiveSlide((slide) => (slide + 1) % slideCount);
+  };
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveSlide((slide) => (slide + 1) % slideCount);
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [slideCount]);
+
+  return (
+    <div className="data-story-visual" aria-label="Listening Pattern Lab data story preview">
+      {currentSlide.kind === "signals" ? (
+        <div key="signals" className="data-story-visual__slide data-story-visual__slide--signals">
+          <div className="data-story-visual__header">
+            <span>visitor path</span>
+            <strong>Know me through data</strong>
+          </div>
+          <div className="data-story-visual__metrics">
+            <div>
+              <small>mode</small>
+              <strong>My story</strong>
+            </div>
+            <div>
+              <small>upload</small>
+              <strong>Local only</strong>
+            </div>
+            <div>
+              <small>dataset</small>
+              <strong>Public sample</strong>
+            </div>
+          </div>
+          <div className="data-story-visual__chart" aria-label="Interactive listening insight bars">
+            {bars.map(([label, height]) => (
+              <button
+                key={label}
+                type="button"
+                style={{ "--bar-height": `${height}%` }}
+                aria-label={`${label} signal, ${height} percent`}
+              >
+                <span>{label}</span>
+              </button>
+            ))}
+          </div>
+          <div className="data-story-visual__flow">
+            <span>Portfolio</span>
+            <span>Listening story</span>
+            <span>Try your data</span>
+          </div>
+        </div>
+      ) : (
+        <button
+          key={currentSlide.src}
+          type="button"
+          className="data-story-visual__slide data-story-visual__slide--screen"
+          onClick={() =>
+            onImagePreview({
+              title: currentSlide.title,
+              type: currentSlide.type,
+              image: currentSlide.src,
+              imageAlt: currentSlide.alt,
+            })
+          }
+          aria-label={`View full ${currentSlide.label} screenshot`}
+        >
+          <img
+            src={currentSlide.src}
+            alt={currentSlide.alt}
+            loading="lazy"
+          />
+          <span>Open full image <Arrow /></span>
+        </button>
+      )}
+      <div className="data-story-visual__screen-controls">
+        <button type="button" onClick={showPreviousSlide} aria-label="Show previous slide">
+          Previous
+        </button>
+        <div role="tablist" aria-label="Select Listening Pattern Lab preview">
+          {slides.map((slide, index) => (
+            <button
+              key={slide.label}
+              type="button"
+              role="tab"
+              aria-selected={activeSlide === index}
+              aria-label={`Show ${slide.label} preview`}
+              onClick={() => setActiveSlide(index)}
+            >
+              <span>{slide.label}</span>
+            </button>
+          ))}
+        </div>
+        <button type="button" onClick={showNextSlide} aria-label="Show next slide">
+          Next
+        </button>
       </div>
     </div>
   );
@@ -154,6 +296,8 @@ function ProjectDetail({ project, onImagePreview, onUnavailableDemo }) {
             <img src={project.image} alt={project.imageAlt} />
             <span>Open full image <Arrow /></span>
           </button>
+        ) : project.displayType === "data-story" ? (
+          <DataStoryVisual onImagePreview={onImagePreview} />
         ) : (
           <ArchitectureVisual />
         )}
@@ -425,7 +569,7 @@ export default function App() {
         <section id="work" className="section section--work">
           <SectionIntro
             label="Selected projects"
-            title="Three projects, viewed from different angles."
+            title="Selected projects, viewed from different angles."
             description="Choose a project to see the problem, the decisions I made, and what the final system needed to do."
           />
           <div className="project-workspace reveal">
