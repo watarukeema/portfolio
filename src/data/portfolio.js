@@ -27,7 +27,8 @@ export const featuredProjects = [
     outcome:
       "Shipped a live portfolio-ready app that turns listening records into fast, understandable insights without saving user files on a server.",
     tags: ["React", "TypeScript", "Data Analysis", "Visualization", "Privacy-first"],
-    github: "https://github.com/watarukeema/listening-pattern-lab",
+    github: "https://github.com/watarukeema/listening-pattern-lab#listening-pattern-lab",
+    githubLabel: "Read case study",
     demo: "https://listening-pattern-lab.vercel.app/",
     displayType: "data-story",
     position: "node--listening-lab",

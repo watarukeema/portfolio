@@ -336,7 +336,7 @@ function ProjectDetail({ project, onImagePreview, onUnavailableDemo }) {
         </div>
         <div className="project-actions">
           <ActionLink href={project.github} external primary>
-            View code
+            {project.githubLabel || "View code"}
           </ActionLink>
           {project.demo ? (
             <ActionLink href={project.demo} external>
