@@ -52,7 +52,7 @@ export const featuredProjects = [
       "Delivered an end-to-end workflow with Zod-validated AI outputs, Swagger/OpenAPI documentation, browser persistence, and ten API tests using mocked OpenAI responses.",
     tags: ["TypeScript", "Express", "OpenAI API", "React", "Zod"],
     github: "https://github.com/watarukeema/job-fit-agent",
-    image: "/job fit agent page .png",
+    image: "/job-fit-agent-page.png",
     imageAlt: "Job Fit Agent showing a structured analysis of a software role",
     displayType: "image",
     position: "node--job-fit",
