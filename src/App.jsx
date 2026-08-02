@@ -17,7 +17,7 @@ import {
   SectionIntro,
 } from "./components/PortfolioUi.jsx";
 
-const resumeHref = "/Resume-Jansen.pdf";
+const resumeHref = "/General-Resume-Jansen.pdf";
 const email = "jansen.jans.wk@gmail.com";
 
 export default function App() {
